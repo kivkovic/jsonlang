@@ -5,17 +5,27 @@ Interpreter for a json-based language
 
 Assignment to variables:
 ```javascript
-[{a:0}, {b:'a'}, {a:2}]
+[{a: 0}, {b: 'a'}, {a: 2}]
 ```
 
 Referencing a variable:
 ```javascript
-[{a:0}, {b:'a'}, {a:2}]
+[{a: 0}, {b: 'a'}, {a: 2}]
 ```
 
 Arithmetic:
 ```javascript
-[{'a':5}, {'b':{'*': [7, {'&':'a'}, 8, -2]}}]
+[{'a': 5}, {'b':{'*': [7, {'&': 'a'}, 8, -2]}}]
+```
+
+Conditional:
+```javascript
+{'?': {'&': 'a'}, ':': {'b': 6}}
+```
+
+Loop:
+```javascript
+{'?': {'&': 'a'}, '@': {'a': {'-': [{'&': 'a'}, 1]}}}
 ```
 
 ## Example
@@ -27,8 +37,8 @@ Arithmetic:
   {
     '?': {'&': 'a'},
     '@': [
-       {'a': {'-': [{'&':'a'}, 1]}},
-       {'b': {'+': [{'&':'b'}, 1]}},
+       {'a': {'-': [{'&': 'a'}, 1]}},
+       {'b': {'+': [{'&': 'b'}, 1]}},
     ]
   }
 ]
