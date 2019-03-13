@@ -90,6 +90,14 @@ assert(
 
 // if...
 
+assert('if', [
+        {'a':5},
+        {'b':9},
+        {'?': {'&': 'a'}, ':': {'b': 6} }
+    ],
+    {}, {},
+    ({ $variables }) => $variables.b === 6);
+
 // loop
 
 assert(
