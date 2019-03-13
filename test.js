@@ -119,6 +119,18 @@ assert(
 
 // functions...
 
+assert(
+    'function',
+    [
+        {'a': 4},
+        {'c': { '#': { 'a': {'+': [{'&':'a'}, 1]} } }  },
+        {'#': 'c' },
+        {'#': 'c' }
+    ],
+    {}, {},
+    ({ $variables }) => $variables.a === 6
+);
+
 /* assert(
     'functions',
     [ {'$a':5}, {'&':'fn1'} ],
