@@ -9,11 +9,9 @@ const exec = (
     keys = Object.keys(block),
     keylen = keys.length,
     value = keylen == 1 && block[keys[0]],
-    fn = (value||0).$,
     operations = {
         /* not  */ '!'  : () => value.map ? value.map(e => !e) : !value,
         /* if   */ '?'  : () => juck(block[juck(block['?'])|0], functions, vars),
-        /* set  */ '='  : () => (fn ? functions : vars)[keys[0]] = value,
         /* prop */ '.'  : () => value.reduce((a, c) => a[juck(c, functions, vars)], juck(value[0], functions, vars)),
         /* eq   */ '==' : () => value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a == d) && d, value[0]),
         /* neq  */ '!=' : () => value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (d == null || d != a) && d, null),
