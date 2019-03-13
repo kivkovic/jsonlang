@@ -32,6 +32,10 @@ const exec = (
             /* ref  */ vars[value],
         }
     ) => {
+        if ('#' in block) {
+            juck(functions[block['#']], functions, vars);
+            return block;
+        }
         if ('?' in block) {
             if ('@' in block) {
                 let condition;
@@ -49,7 +53,11 @@ const exec = (
             if (op in block) return operations[op]();
         }
         for (const prop in block) {
-            vars[prop] = juck(block[prop], functions, vars);
+            if (typeof block[prop] == 'object' && '#' in block[prop]) {
+                functions[prop] = block[prop]['#'];
+            } else {
+                vars[prop] = juck(block[prop], functions, vars);
+            }
         }
         return block;
     }
