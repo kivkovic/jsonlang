@@ -53,4 +53,6 @@ while (a) {
   a--;
   b++;
 }
+// $variables.a = 0;
+// $variables.b = 5;
 ```
