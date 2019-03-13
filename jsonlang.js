@@ -34,14 +34,18 @@ const exec = (
             /* ref  */ vars[value],
         }
     ) => {
-        if ('@' in block && '?' in block) {
-            let condition;
-            do {
-                if (condition = juck(block['?'], functions, vars)) { // assign!
-                    juck(block['@'], functions, vars);
-                }
-            } while (condition);
-            return block;
+        if ('?' in block) {
+            if ('@' in block) {
+                let condition;
+                do {
+                    if (condition = juck(block['?'], functions, vars)) { // assign!
+                        juck(block['@'], functions, vars);
+                    }
+                } while (condition);
+                return block;
+            } else if (':' in block) {
+                juck(block[':'], functions, vars);
+            }
         }
         for (const op in operations) {
             if (op in block) return operations[op]();
