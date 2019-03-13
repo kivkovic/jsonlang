@@ -1,7 +1,24 @@
 # jsonlang
 Interpreter for a json-based language
 
-## Example syntax
+## Syntax
+
+Assignment to variables:
+```javascript
+[{a:0}, {b:'a'}, {a:2}]
+```
+
+Referencing a variable:
+```javascript
+[{a:0}, {b:'a'}, {a:2}]
+```
+
+Arithmetic:
+```javascript
+[{'a':5}, {'b':{'*': [7, {'&':'a'}, 8, -2]}}]
+```
+
+## Example
 
 ```javascript
 [
