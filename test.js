@@ -20,15 +20,9 @@ assert('quine',
 // variables
 
 assert('init & assign',
-    [{a:0}, {b:'a'}, {a:2}],
+    [{a:10}, {b: {'&':'a'} }, {a:2}],
     {}, {},
-    ({ $variables }) => $variables.a === 2 && $variables.b === 'a'
-);
-
-assert('ref assign',
-    [{a:5}, {b: {'&':'a'}}],
-    {}, {},
-    ({ $variables }) => $variables.a === $variables.b
+    ({ $variables }) => $variables.a === 2 && $variables.b === 10
 );
 
 assert(
