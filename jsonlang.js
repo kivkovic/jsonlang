@@ -37,7 +37,10 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
             } while (condition);
             return block;
         } else if (':' in block) {
-            juck(block[':'], functions, vars);
+            if (juck(block['?'], functions, vars)) {
+                return juck(block[':'], functions, vars);
+            }
+            return false;
         }
     }
 
@@ -46,7 +49,6 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
         if (!op) continue;
         switch (op[1]) {
             case '!'  /* not  */ : return value.map ? value.map(e => !e) : !value;
-            case '?'  /* if   */ : return juck(block[juck(block['?'])|0], functions, vars, lineNum);
             case '.'  /* prop */ : return value.reduce((a, c) => a[juck(c, functions, vars)], juck(value[0], functions, vars));
             case '==' /* eq   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a == d) && d, value[0]);
             case '!=' /* neq  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (d == null || d != a) && d, null);
