@@ -10,23 +10,28 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
         keylen = keys.length,
         value = keylen == 1 && block[keys[0]];
 
-    if ('&' in block && '$' in block) {
-        const fn = functions[block['&']];
-        const params = {};
-        const types = {};
-        block['$'].map((arg, i) => {
-            const argkey = Object.keys(fn.params[i])[0];
-            params[argkey] = juck(arg, functions, vars);
+    if ('$' in block) {
+        if ('&' in block) {
+            const fn = functions[block['&']];
+            const params = {};
+            const types = {};
+            block['$'].map((arg, i) => {
+                const argkey = Object.keys(fn.params[i])[0];
+                params[argkey] = juck(arg, functions, vars);
 
-            if (typeof params[argkey] != typeof fn.params[i][argkey]) {
-                throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nWrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
-            }
-        });
-        const results = { ...fn.params, ...params };
-        const procedure = juck(fn.body, functions, results, 0, lineNum);
-        return procedure.length ? procedure[procedure.length - 1] : void 0;
+                if (typeof params[argkey] != typeof fn.params[i][argkey]) {
+                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nWrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
+                }
+            });
+            const results = { ...fn.params, ...params };
+            const procedure = juck(fn.body, functions, results, 0, lineNum);
+            return procedure.length ? procedure[procedure.length - 1] : void 0;
+        } else {
+            const length = juck(block['$'], functions, vars, lineNum).length;
+            if (typeof length == 'undefined') throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nLength ($) called on object of type '${typeof block['$']}'`;
+            return length;
+        }
     }
-
     if ('?' in block) {
         if ('@' in block) {
             let condition;
