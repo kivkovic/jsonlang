@@ -62,9 +62,13 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
             case '*'  /* mul  */ : return value.reduce((a, c) => a * juck(c, functions, vars), 1);
             case '/'  /* div  */ : return value.reduce((a, c) => a / juck(c, functions, vars), 1);
             case '^'  /* xor  */ : return value.reduce((a, c) => a ^ juck(c, functions, vars), 0);
-            case '&'  /* ref  */ : return vars[value];
+            case '&'  /* ref  */ :
+                if (typeof vars[value] == 'undefined') {
+                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nUndefined variable name '${value}'`;
+                }
+                return vars[value];
             default:
-                throw `Error in block ${lineNum}:\n${JSON.stringify(block)}`;
+                throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\n${op[1]} is an unrecognized operator`;
         }
     }
 
