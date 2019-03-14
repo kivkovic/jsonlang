@@ -3,14 +3,9 @@ Interpreter for a json-based language
 
 ## Syntax
 
-Assignment to variables:
+Variables:
 ```javascript
-[{a: 0}, {b: 'a'}, {a: 2}]
-```
-
-Referencing a variable:
-```javascript
-[{a: 0}, {b: 'a'}, {a: 2}]
+[{a:10}, {b: {'&':'a'} }, {a:2}]
 ```
 
 Arithmetic:
