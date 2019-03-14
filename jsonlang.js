@@ -27,9 +27,7 @@ const exec = (block, functions, vars) => {
             /* mul  */ '*'  : () => value.reduce((a, c) => a * juck(c, functions, vars), 1),
             /* div  */ '/'  : () => value.reduce((a, c) => a / juck(c, functions, vars), 1),
             /* xor  */ '^'  : () => value.reduce((a, c) => a ^ juck(c, functions, vars), 0),
-            /* ref  */ '&'  : () =>
-                /* fn   */ functions[value] ? juck(functions[value], functions, vars) : // ??
-                /* ref  */ vars[value],
+            /* ref  */ '&'  : () => vars[value],
             };
 
     if ('@' in block && '$' in block) {
