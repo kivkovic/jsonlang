@@ -30,8 +30,8 @@ const exec = (block, functions, vars) => {
             /* ref  */ '&'  : () => vars[value],
             };
 
-    if ('@' in block && '$' in block) {
-        const fn = functions[block['@']];
+    if ('&' in block && '$' in block) {
+        const fn = functions[block['&']];
         const params = {};
         const types = {};
         block['$'].map((arg, i) => {
