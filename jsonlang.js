@@ -35,7 +35,7 @@ const exec = (
         if ('@' in block && '$' in block) {
             const fn = functions[block['@']];
             const params = {};
-            block['$'].map((varname, i) => (params[Object.keys(fn.params[i])[0]] = vars[varname]));
+            block['$'].map((arg, i) => (params[Object.keys(fn.params[i])[0]] = juck(arg, functions, vars)));
             const results = { ...fn.params, ...params };
             const procedure = juck(fn.body, functions, results);
             return procedure.length ? procedure[procedure.length - 1] : void 0;
