@@ -3,14 +3,9 @@ Interpreter for a json-based language
 
 ## Syntax
 
-Assignment to variables:
+Variables:
 ```javascript
-[{a: 0}, {b: 'a'}, {a: 2}]
-```
-
-Referencing a variable:
-```javascript
-[{a: 0}, {b: 'a'}, {a: 2}]
+[{a:10}, {b: {'&':'a'} }, {a:2}]
 ```
 
 Arithmetic:
@@ -25,34 +20,26 @@ Conditional:
 
 Loop:
 ```javascript
-{'?': {'&': 'a'}, '@': {'a': {'-': [{'&': 'a'}, 1]}}}
+{
+  '?': {'&': 'a'}, 
+  '@': [
+    {'a': {'-': [{'&': 'a'}, 1]}}
+  ]
+}
 ```
 
-## Example
-
+Function:
 ```javascript
 [
-  {'a': 5},
-  {'b': 0},
-  {
-    '?': {'&': 'a'},
-    '@': [
-       {'a': {'-': [{'&': 'a'}, 1]}},
-       {'b': {'+': [{'&': 'b'}, 1]}},
+  {'a': 4},
+  {'c': {
+    '$': [{ 'x': 0 }],
+    '#': [
+      { 'x': {'+': [{'&':'x'}, 1]} },
+      { '&': 'x' }
     ]
-  }
+  }  },
+  {'d' : {'@': 'c', '$': ['a'] } },
 ]
 ```
 
-Pseudocode:
-
-```javascript
-a = 5;
-b = 0;
-while (a) {
-  a--;
-  b++;
-}
-// $variables.a = 0;
-// $variables.b = 5;
-```
