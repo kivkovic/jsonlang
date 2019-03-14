@@ -32,10 +32,15 @@ const exec = (
             /* ref  */ vars[value],
         }
     ) => {
-        if ('#' in block) {
-            juck(functions[block['#']], functions, vars);
-            return block;
+        if ('@' in block && '$' in block) {
+            const fn = functions[block['@']];
+            const params = {};
+            block['$'].map((varname, i) => (params[Object.keys(fn.params[i])[0]] = vars[varname]));
+            const results = { ...fn.params, ...params };
+            const procedure = juck(fn.body, functions, results);
+            return procedure.length ? procedure[procedure.length - 1] : void 0;
         }
+
         if ('?' in block) {
             if ('@' in block) {
                 let condition;
@@ -49,17 +54,23 @@ const exec = (
                 juck(block[':'], functions, vars);
             }
         }
+
         for (const op in operations) {
             if (op in block) return operations[op]();
         }
+
         for (const prop in block) {
             if (typeof block[prop] == 'object' && '#' in block[prop]) {
-                functions[prop] = block[prop]['#'];
+                functions[prop] = {
+                    body: block[prop]['#'],
+                    params: block[prop]['$'],
+                }
             } else {
                 vars[prop] = juck(block[prop], functions, vars);
             }
         }
-        return block;
+
+        return value;
     }
 
 // new syntax:
