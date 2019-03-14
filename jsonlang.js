@@ -79,17 +79,4 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
     return value;
 }
 
-// new syntax:
-/*
- {a:1} literal
- {<OP>:[...]} expression // <OP> in [=,+,-,*,/,<,>,<=,>=,==,!=]
- {'.': x} or {'.':[x1,...,xn]} property reference
- {'&': x} reference x
- {'&': x,'a1':...,'an':...} fn x call a1...an
- {'?':{...},1:{...},0:{...}} if
- {'#'<lines>} fn def
-*/
-
-// $return = juck(eval(program), $functions, $variables)
-
 exports.juck = juck;
