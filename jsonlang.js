@@ -1,6 +1,6 @@
 
 const juck = (input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) =>
-    Array.isArray(input) ? input.map((line, i) => exec(line, functions, vars, lineNum + i + 1)) :
+    Array.isArray(input) ? input.map((line, i) => typeof line != 'object' ? line : exec(line, functions, vars, lineNum + i + 1)) :
     typeof input === 'object' ? exec(input, functions, vars, lineNum) :
     input;
 
