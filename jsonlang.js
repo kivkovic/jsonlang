@@ -18,6 +18,8 @@ const juck = (input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) 
 
 const exec = (block, functions, vars, lineNum, callerLineNum) => {
 
+    if (block == null) return block;
+
     const keys = Object.keys(block),
         keylen = keys.length,
         value = keylen == 1 && block[keys[0]];
@@ -109,7 +111,7 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
 
     for (const prop in block) {
 
-        if (typeof block[prop] == 'object') {
+        if (typeof block[prop] == 'object' && block[prop]) {
             if ('#' in block[prop]) {
                 functions[prop] = {
                     body: block[prop]['#'],
@@ -119,7 +121,14 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
         }
 
         if (prop.length > 1 && prop[0] == '$') {
-            vars[prop] = juck(block[prop], functions, vars, lineNum);
+            const result = juck(block[prop], functions, vars, lineNum);
+            if (result != null) {
+                const type1 = typeof vars[prop], type2 = typeof result;
+                if (type1 != 'undefined' && type1 != type2) {
+                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nAssigning ${type2} value to variable ${prop}, previously declared as ${type1}`;
+                }
+            }
+            vars[prop] = result;
         }
     }
 
