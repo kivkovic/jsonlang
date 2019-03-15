@@ -9,7 +9,7 @@ function juck(input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) 
         return input.map((line, i) => typeof line == 'number' ? line : juck(line, functions, vars, lineNum + i + 1)); // fast path for numbers
     }
 
-    if (typeof input == 'object') { // object, possibly an instruction tree
+    if (typeof input == 'object' && input != null) { // object, possibly an instruction tree
         return exec(input, functions, vars, lineNum);
     }
 
@@ -18,7 +18,9 @@ function juck(input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) 
 
 function exec(block, functions, vars, lineNum, callerLineNum) {
 
-    if (block == null) return block;
+    const error = `Error in block ${lineNum}:\n${JSON.stringify(block)}\n`;
+
+    if (block == null) throw `${error}null value encountered`
 
     const keys = Object.keys(block),
         keylen = keys.length,
@@ -35,7 +37,7 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
                 const argkey = Object.keys(fn.params[i])[0];
                 params[argkey] = juck(arg, functions, vars);
                 if (typeof params[argkey] != typeof fn.params[i][argkey]) {
-                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nWrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
+                    throw `${error}Wrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
                 }
             });
 
@@ -45,7 +47,7 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
 
         } else { // length operator
             const length = juck(block['$'], functions, vars, lineNum).length;
-            if (typeof length == 'undefined') throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nLength ($) called on object of type '${typeof block['$']}'`;
+            if (typeof length == 'undefined') throw `${error}Length ($) called on object of type '${typeof block['$']}'`;
             return length;
         }
     }
@@ -109,7 +111,7 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
             case '/'  /* div  */ : return value.reduce((a, c) => a / juck(c, functions, vars), 1);
             case '^'  /* xor  */ : return value.reduce((a, c) => a ^ juck(c, functions, vars), 0);
             default: // should be unreachable
-                throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\n${op[1]} is an unrecognized operator`;
+                throw `${error}${op[1]} is an unrecognized operator`;
         }
     }
 
@@ -117,7 +119,7 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
 
         if (typeof block[prop] == 'object' && block[prop]) {
             if ('#' in block[prop]) {
-                if (prop[0] != '$') throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nFunction name must start with a $`;
+                if (prop[0] != '$') throw `${error}Function name must start with a $`;
 
                 functions[prop] = {
                     body: block[prop]['#'],
@@ -128,11 +130,14 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
 
         if (prop.length > 1 && prop[0] == '$') {
             const result = juck(block[prop], functions, vars, lineNum);
+
             if (result != null) {
                 const type1 = typeof vars[prop], type2 = typeof result;
                 if (type1 != 'undefined' && type1 != type2) {
-                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nAssigning ${type2} value to variable ${prop}, previously declared as ${type1}`;
+                    throw `${error}Assigning ${type2} value to variable ${prop}, previously declared as ${type1}`;
                 }
+            } else {
+                throw `${error}Assigning null value to variable ${prop}`;
             }
             vars[prop] = result;
         }
