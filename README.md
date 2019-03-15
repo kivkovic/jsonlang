@@ -5,9 +5,10 @@ Interpreter for a json-based language
 
 Variables:
 ```javascript
-[
-  {'$a': 10}, 
-  {'$b': '$a'}, 
+[                  /* static typed as: */
+  {'$a': 10},      /*  - number        */
+  {'$c': 'hello'}, /*  - string        */
+  {'$b': '$a'},    /*  - number        */
   {'$a': 2}
 ]
 ```
