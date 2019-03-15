@@ -5,12 +5,18 @@ Interpreter for a json-based language
 
 Variables:
 ```javascript
-[{a:10}, {b: {'&':'a'} }, {a:2}]
+[
+  {a:10}, 
+  {b: {'&':'a'} }
+]
 ```
 
 Arithmetic:
 ```javascript
-[{'a': 5}, {'b':{'*': [7, {'&': 'a'}, 8, -2]}}]
+[
+  {'a': 5}, 
+  {'b':{'*': [7, {'&': 'a'}, {'+': [1, 2, 3]}, 2]}}
+]
 ```
 
 Conditional:
