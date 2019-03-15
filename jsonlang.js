@@ -74,7 +74,7 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
 
         switch (key) {
             case '!'  /* not  */ : return value.map ? value.map(e => !e) : !value;
-            case '.'  /* prop */ : return value.reduce((a, c) => a[juck(c, functions, vars)], juck(value[0], functions, vars));
+            case '.'  /* prop */ : return value.slice(1).reduce((a, c) => a[juck(c, functions, vars)], juck(value[0], functions, vars));
             case '==' /* eq   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a == d) && d, value[0]) && true;
             case '!=' /* neq  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (d == null || d != a) && d, null) && true;
             case '<'  /* lt   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a < d) && d, -Infinity) && true;
