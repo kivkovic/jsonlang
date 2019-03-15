@@ -100,7 +100,7 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
             case '%'  /* mod  */ : return value.slice(1).reduce((a, c) => a % juck(c, functions, vars), juck(value[0], functions, vars));
             case '&&' /* and  */ : return value.reduce((a, c) => a && juck(c, functions, vars), 1) >= 1;
             case '||' /* or   */ : return value.reduce((a, c) => a || juck(c, functions, vars), 0) >= 1;
-            case '+'  /* sum  */ : return value.reduce((a, c) => a + juck(c, functions, vars), 0);
+            case '+'  /* sum  */ : return value.slice(1).reduce((a, c) => a + juck(c, functions, vars), juck(value[0], functions, vars));
             case '*'  /* mul  */ : return value.reduce((a, c) => a * juck(c, functions, vars), 1);
             case '/'  /* div  */ : return value.reduce((a, c) => a / juck(c, functions, vars), 1);
             case '^'  /* xor  */ : return value.reduce((a, c) => a ^ juck(c, functions, vars), 0);
