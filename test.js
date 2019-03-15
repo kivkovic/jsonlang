@@ -5,8 +5,29 @@ const assert = (title, program, $functions, $variables, expression) => {
     console.log(
         title,
         Array(80 - title.length).join('.'),
-        expression({ $functions, $variables, $return }) ? 'OK' : ['ERROR', {$functions, $variables, $return}]
+        !expression({ $functions, $variables, $return })
+            ? ['ERROR', {$functions, $variables: JSON.stringify($variables), $return}]
+            : 'OK'
     );
+}
+
+const assertFail = (title, program, $functions, $variables, throwRegex) => {
+    try {
+        $fail = juck(eval(program), $functions, $variables);
+        console.log(
+            title,
+            Array(80 - title.length).join('.'),
+            ['ERROR', {$functions, $variables: JSON.stringify($variables), $return}]
+        );
+    } catch (error) {
+        console.log(
+            title,
+            Array(80 - title.length).join('.'),
+            !`${error}`.match(throwRegex) 
+                ? ['ERROR', {$functions, $variables: JSON.stringify($variables), $return, $thrownError: error}]
+                : 'OK'
+        );
+    }
 }
 
 // tests
