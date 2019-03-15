@@ -1,8 +1,20 @@
 
-const juck = (input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) =>
-    Array.isArray(input) ? input.map((line, i) => typeof line != 'object' ? line : exec(line, functions, vars, lineNum + i + 1)) :
-    typeof input === 'object' ? exec(input, functions, vars, lineNum) :
-    input;
+const juck = (input, functions = {}, vars = {}, lineNum = 0, callerLineNum = 0) => {
+
+    if (typeof input === 'string' && input.length > 1 && input[0] == '$') {
+        return vars[input];
+    }
+
+    if (Array.isArray(input)) {
+        return input.map((line, i) => typeof line == 'number' ? line : juck(line, functions, vars, lineNum + i + 1));
+    }
+
+    if (typeof input == 'object') {
+        return exec(input, functions, vars, lineNum);
+    }
+
+    return input;
+}
 
 const exec = (block, functions, vars, lineNum, callerLineNum) => {
 
@@ -18,20 +30,21 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
             block['$'].map((arg, i) => {
                 const argkey = Object.keys(fn.params[i])[0];
                 params[argkey] = juck(arg, functions, vars);
-
                 if (typeof params[argkey] != typeof fn.params[i][argkey]) {
                     throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nWrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
                 }
             });
-            const results = { ...fn.params, ...params };
+            const results = { ...params };
             const procedure = juck(fn.body, functions, results, 0, lineNum);
             return procedure.length ? procedure[procedure.length - 1] : void 0;
+
         } else {
             const length = juck(block['$'], functions, vars, lineNum).length;
             if (typeof length == 'undefined') throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nLength ($) called on object of type '${typeof block['$']}'`;
             return length;
         }
     }
+
     if ('?' in block) {
         if ('@' in block) {
             let condition;
@@ -89,23 +102,23 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
             case '*'  /* mul  */ : return value.reduce((a, c) => a * juck(c, functions, vars), 1);
             case '/'  /* div  */ : return value.reduce((a, c) => a / juck(c, functions, vars), 1);
             case '^'  /* xor  */ : return value.reduce((a, c) => a ^ juck(c, functions, vars), 0);
-            case '&'  /* ref  */ :
-                if (typeof vars[value] == 'undefined') {
-                    throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\nUndefined variable name '${value}'`;
-                }
-                return vars[value];
             default:
                 throw `Error in block ${lineNum}:\n${JSON.stringify(block)}\n${op[1]} is an unrecognized operator`;
         }
     }
 
     for (const prop in block) {
-        if (typeof block[prop] == 'object' && '#' in block[prop]) {
-            functions[prop] = {
-                body: block[prop]['#'],
-                params: block[prop]['$'],
+
+        if (typeof block[prop] == 'object') {
+            if ('#' in block[prop]) {
+                functions[prop] = {
+                    body: block[prop]['#'],
+                    params: block[prop]['$'],
+                }
             }
-        } else {
+        }
+
+        if (prop.length > 1 && prop[0] == '$') {
             vars[prop] = juck(block[prop], functions, vars, lineNum);
         }
     }
