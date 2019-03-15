@@ -50,17 +50,37 @@ const exec = (block, functions, vars, lineNum, callerLineNum) => {
     }
 
     for (const key of keys) {
-        const op = key.match(/^(\!|\?|\.|\==|\!=|\<|\>|\<=|\>=|\-|\%|\&\&|\|\||\+|\*|\/|\^|\&)$/);
+        const op = key.match(/^(\!|\?|\.|\==|\!=|\<|\>|\<=|\>=|\-|\%|\&\&|\|\||\+|\*|\/|\^|\&|<[+-]|[+-]>)$/);
         if (!op) continue;
-        switch (op[1]) {
+
+        if (key.match(/^(<[+-]|[+-]>)$/)) {
+            let val;
+            if (key == '->' || key == '<-') {
+                val = juck(block[key], functions, JSON.parse(JSON.stringify(vars)));
+                if      (key == '->') val.pop();
+                else if (key == '<-') val.shift();
+            
+            } else {
+                val = juck(block[key][0], functions, JSON.parse(JSON.stringify(vars)));
+                block[key].slice(1)
+                    .map(op => juck(op, functions, JSON.parse(JSON.stringify(vars))))
+                    .map(op => {
+                        if      (key == '+>') val.unshift(juck(block[key][1], functions, vars));
+                        else if (key == '<+') val.push(juck(block[key][1], functions, vars));
+                    });
+            }
+            return val;
+        }
+
+        switch (key) {
             case '!'  /* not  */ : return value.map ? value.map(e => !e) : !value;
             case '.'  /* prop */ : return value.reduce((a, c) => a[juck(c, functions, vars)], juck(value[0], functions, vars));
-            case '==' /* eq   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a == d) && d, value[0]);
-            case '!=' /* neq  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (d == null || d != a) && d, null);
-            case '<'  /* lt   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a < d) && d, -Infinity);
-            case '>'  /* gt   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a > d) && d, Infinity);
-            case '<=' /* lte  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a <= d) && d, 0);
-            case '>=' /* gte  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a >= d) && d, 0);
+            case '==' /* eq   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a == d) && d, value[0]) && true;
+            case '!=' /* neq  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (d == null || d != a) && d, null) && true;
+            case '<'  /* lt   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a < d) && d, -Infinity) && true;
+            case '>'  /* gt   */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a > d) && d, Infinity) && true;
+            case '<=' /* lte  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a <= d) && d, 0) && true;
+            case '>=' /* gte  */ : return value.reduce((a, c, x, y, d = juck(c, functions, vars)) => (a >= d) && d, 0) && true;
             case '-'  /* diff */ : return value.slice(1).reduce((a, c) => a - juck(c, functions, vars), juck(value[0], functions, vars));
             case '%'  /* mod  */ : return value.slice(1).reduce((a, c) => a % juck(c, functions, vars), juck(value[0], functions, vars));
             case '&&' /* and  */ : return value.reduce((a, c) => a && juck(c, functions, vars), 1) >= 1;
