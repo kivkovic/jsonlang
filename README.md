@@ -46,3 +46,11 @@ Function:
 // d == 6
 ```
 
+## Usage
+
+```javascript
+const juck = require('./jsonlang.js').juck;
+const functions = { /* back API */ };
+const state = { };
+juck(input, functions, state);
+```
