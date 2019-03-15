@@ -53,7 +53,12 @@ assert(
     ({ $variables }) => $variables.$a === $variables.$b && $variables.$b === $variables.$c && $variables.$c === 5
 );
 
-// nested member assignment...
+assertFail(
+    'type check',
+    [{'$a': 1}, {'$a': []}],
+    {}, {},
+    /.*object.*to.*\$a.*number/i
+);
 
 // arithmetic
 
@@ -266,8 +271,8 @@ assert(
     [
         {'$a': [1, 2, 3, 4]},
         {'$b': '$a'},
-        {'$a': 1},
+        {'$a': null},
     ],
     {}, {},
-    ({ $variables }) => JSON.stringify($variables.$b) === JSON.stringify([1, 2, 3, 4]) && $variables.$a === 1
+    ({ $variables }) => JSON.stringify($variables.$b) === JSON.stringify([1, 2, 3, 4]) && $variables.$a === null
 );
