@@ -31,11 +31,12 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
 
             const fn = functions[block['&']],
                 params = {},
-                types = {};
+                types = {},
+                varscopy = JSON.parse(JSON.stringify(vars));
 
             block['$'].map((arg, i) => { // evaluate parameters
                 const argkey = Object.keys(fn.params[i])[0];
-                params[argkey] = juck(arg, functions, vars);
+                params[argkey] = juck(arg, functions, varscopy);
                 if (typeof params[argkey] != typeof fn.params[i][argkey]) {
                     throw `${error}Wrong argument type for '${argkey}', expecting ${typeof fn.params[i][argkey]}, got ${typeof params[argkey]}`;
                 }
@@ -44,6 +45,8 @@ function exec(block, functions, vars, lineNum, callerLineNum) {
             const results = { ...params },
                 procedure = juck(fn.body, functions, results, 0, lineNum); // call
             return procedure.length ? procedure[procedure.length - 1] : void 0; // pop run stack
+
+        } else if ('#' in block) { // function parameters, skip
 
         } else { // length operator
             const length = juck(block['$'], functions, vars, lineNum).length;
