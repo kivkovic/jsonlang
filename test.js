@@ -262,14 +262,14 @@ assert(
         {
             '?': {'<': ['$c', {'$': '$a'}]},
             '@': [
-                {'$c': {'+': ['$c', 1]}},
                 {'$b': {'<+': ['$b', {'.': [ '$a', '$c' ]}] } },
+                {'$c': {'+': ['$c', 1]}},
             ]
         }
     ],
     {}, {},
     ({ $variables }) => (
-        JSON.stringify($variables.$b) === JSON.stringify([2, 3, 4, null]) &&
+        JSON.stringify($variables.$b) === JSON.stringify([1, 2, 3, 4]) &&
         JSON.stringify($variables.$a) === JSON.stringify([1, 2, 3, 4]) &&
         $variables.$c === 4
     )
@@ -280,8 +280,8 @@ assert(
     [
         {'$a': [1, 2, 3, 4]},
         {'$b': '$a'},
-        {'$a': null},
+        {'$a': []},
     ],
     {}, {},
-    ({ $variables }) => JSON.stringify($variables.$b) === JSON.stringify([1, 2, 3, 4]) && $variables.$a === null
+    ({ $variables }) => JSON.stringify($variables.$b) === JSON.stringify([1, 2, 3, 4]) && JSON.stringify($variables.$a) === JSON.stringify([])
 );
