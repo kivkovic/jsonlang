@@ -132,6 +132,15 @@ assert(
     ({ $variables }) => $variables.$a === true
 );
 
+// strings
+
+assert(
+    'string',
+    [{'$a': 'hello'}, {'$b': 'world'}, {'$c': { '+': [ '$a', ' ', '$b', '!' ] }}],
+    {}, {},
+    ({ $variables }) => $variables.$c === 'hello world!'
+);
+
 // if
 
 assert('if', [
