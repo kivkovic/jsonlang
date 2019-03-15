@@ -194,9 +194,8 @@ assert(
         {'$d' : {'&': '$c', '$': ['$a' , 2] } },
     ],
     {}, {},
-    ({ $variables }) => $variables.$d === 6
+    ({ $variables }) => $variables.$d === 6 && $variables.$x === undefined
 );
-
 
 assertFail(
     'fn arg type check',
