@@ -215,3 +215,48 @@ assert(
     {}, {},
     ({ $variables }) => JSON.stringify($variables) == JSON.stringify({a: 4, c:[1, 2, 3, 4], d:4, e:[1, 2, 3], f:[5, 1, 2, 3]})
 );
+
+assert(
+    'array len loop',
+    [
+        {'a': [1, 2, 3, 4]},
+        {'b': []},
+        {'c': 0},
+        {
+            '?': {'$': {'&' : 'a'}},
+            '@': [
+                {'c': {'+': [{'&': 'c'}, 1]}},
+                {'b': {'<+': [{'&': 'b'}, {'.': [ {'&': 'a'}, 0 ]}] } },
+                {'a': {'<-': {'&' : 'a'}}}
+            ]
+        }
+    ],
+    {}, {},
+    ({ $variables }) => (
+        JSON.stringify($variables.b) === JSON.stringify([1, 2, 3, 4]) &&
+        JSON.stringify($variables.a) === JSON.stringify([]) &&
+        $variables.c === 4
+    )
+);
+
+assert(
+    'array for loop',
+    [
+        {'a': [1, 2, 3, 4]},
+        {'b': []},
+        {'c': 0},
+        {
+            '?': {'<': [{'&': 'c'}, {'$': {'&' : 'a'}}]},
+            '@': [
+                {'c': {'+': [{'&': 'c'}, 1]}},
+                {'b': {'<+': [{'&': 'b'}, {'.': [ {'&': 'a'}, {'&': 'c'} ]}] } },
+            ]
+        }
+    ],
+    {}, {},
+    ({ $variables }) => (
+        JSON.stringify($variables.b) === JSON.stringify([2, 3, 4, null]) &&
+        JSON.stringify($variables.a) === JSON.stringify([1, 2, 3, 4]) &&
+        $variables.c === 4
+    )
+);
